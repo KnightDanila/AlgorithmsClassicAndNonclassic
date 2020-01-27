@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Johnson's Algorithm - Jobs And 2 Machines</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <div>TODO write content</div>
+        <div>M1<input type="text" class="m1" value='3, 5, 4, 2, 1'/><br/></div>
+        <div>M2<input type="text" class="m2" value='5, 1, 6, 3, 7' /> <br/></div>
+        <br>
+        <button id="CalcBtn" >Calc</button>
+        <br>
+
+        <svg id="svgOne" xmlns="http://www.w3.org/2000/svg" width="1000" height="100"></svg>
+
+        <script type="text/javascript">
+
+
+            var calcBtn = document.getElementById('CalcBtn');
+            calcBtn.onclick = function () {
+                alert(1);
+                calc();
+            };
+
+            function getTheData(elementsClassName) {
+                var some = document.getElementsByClassName(elementsClassName);
+                var inputValues = [];
+
+                for (i in some) {
+                    //extract the value of input elements
+                    var singleVal = some[i].value;
+                    if (singleVal !== "" && singleVal !== undefined) {
+                        inputValues = singleVal.split(",").map(Number);
+                        ;
+                    }
+                }
+
+
+                //var showVals = document.getElementById('showInputValues');
+
+                //Convert to string format to see the output easily 
+                //var stringFormat = String(inputValues);
+                //showVals.innerHTML = stringFormat;
+                //console.log(inputValues);
+                return inputValues;
+
+            }
+
+            function calc() {
+                svgOneWidth = 1000;
+                var m1 = [3, 5, 4, 2, 1];
+                m1 = getTheData("m1");
+                var m2 = [5, 1, 6, 3, 7];
+                m2 = getTheData("m2");
+                var m1m2 = [];
+                for (var i = 0; i < m1.length; i++) {
+                    m1m2.push([m1[i], m2[i]]);
+                }
+
+                // print
+                var s = "";
+                for (var i = 0; i < m1m2.length; i++) {
+                    s += "{";
+                    for (var j = 0; j < m1m2[i].length; j++) {
+                        s += m1m2[i][j] + ",";
+                    }
+                    s += "};";
+                }
+
+                alert(s);
+                var JohnsonsQueue = {
+                    path: [],
+                    i: 0,
+                    j: 0,
+                    // Enter 0
+                    initI: function (i) {
+                        this.i = i;
+                    },
+                    // Enter n (size of Queue)
+                    initJ: function (j) {
+                        this.j = j - 1;
+                    },
+                    pushFront: function (n) {
+                        this.path[this.i] = n;
+                        this.i++;
+                    },
+                    pushBack: function (n) {
+                        this.path[this.j] = n;
+                        this.j--;
+                    }
+                };
+                JohnsonsQueue.initI(0);
+                JohnsonsQueue.initJ(m1m2.length);
+                var min;
+                var minI, minJ;
+                for (; JohnsonsQueue.path.length < m1m2.length || JohnsonsQueue.path.includes(undefined); ) {
+                    min = Number.MAX_SAFE_INTEGER;
+                    for (var i = 0; i < m1m2.length; i++) {
+                        for (var j = 0; j < m1m2[i].length; j++) {
+                            if (m1m2[i][j] < min && JohnsonsQueue.path.indexOf(i) == -1) {
+                                min = m1m2[i][j];
+                                minI = i;
+                                minJ = j;
+                            }
+                        }
+                    }
+                    if (minJ > 0) {
+                        JohnsonsQueue.pushBack(minI);
+                        //alert(minI + 1);
+                    } else {
+                        JohnsonsQueue.pushFront(minI);
+                        //alert(minI + 1);
+                    }
+                    // print path
+                    var s = "";
+                    s += "{";
+                    for (var i = 0; i < JohnsonsQueue.path.length; i++) {
+                        s += JohnsonsQueue.path[i] + 1 + ",";
+                    }
+                    s += "};";
+                    //alert(s);
+                }
+
+
+
+                // print path
+                var s = "";
+                s += "{";
+                for (var i = 0; i < JohnsonsQueue.path.length; i++) {
+                    s += JohnsonsQueue.path[i] + 1 + ",";
+                }
+                s += "};";
+                alert(s);
+                // Time Count
+                var sum = 0;
+                sum += m1m2[JohnsonsQueue.path[0]][0];
+                var drawLineM2 = []; // Type[0,1], Length
+                drawLineM2.push([0, m1m2[JohnsonsQueue.path[0]][0]]); //drawLineM2.push([,])
+                var save = 0;
+                var pause = 0;
+                for (var i = 1; i < JohnsonsQueue.path.length; i++) {
+
+                    if (m1m2[JohnsonsQueue.path[i]][0] > save + m1m2[JohnsonsQueue.path[i - 1]][1]) {
+                        sum += m1m2[JohnsonsQueue.path[i]][0];
+                        drawLineM2.push([1, m1m2[JohnsonsQueue.path[i - 1]][1]]);
+                        drawLineM2.push([0, m1m2[JohnsonsQueue.path[i]][0] - save - m1m2[JohnsonsQueue.path[i - 1]][1]]);
+                    } else {
+
+                        //      save > m1m2[JohnsonsQueue.path[i]][0]
+                        //      | 1 | 
+                        //      |  save  | 1 |
+                        //if (save > m1m2[JohnsonsQueue.path[i]][0]) {
+                        save = save - m1m2[JohnsonsQueue.path[i]][0] + m1m2[JohnsonsQueue.path[i - 1]][1];
+                        sum += m1m2[JohnsonsQueue.path[i - 1]][1];
+                        drawLineM2.push([1, m1m2[JohnsonsQueue.path[i - 1]][1]]);
+                        //} else {
+
+                        //}
+                    }
+                    if (i + 1 === JohnsonsQueue.path.length) {
+                        drawLineM2.push([1, m1m2[JohnsonsQueue.path[i]][1]]);
+                        sum += m1m2[JohnsonsQueue.path[i]][1];
+                    }
+                }
+
+                var time = sum;
+                alert("time: " + time);
+                tableCreateM1();
+                function tableCreateM1() {
+                    //body reference 
+                    var body = document.getElementsByTagName("body")[0];
+                    // create elements <table> and a <tbody>
+                    var tbl = document.createElement("table");
+                    var tblBody = document.createElement("tbody");
+                    // cells creation
+                    fj = 0;
+                    // table row creation
+                    var row = document.createElement("tr");
+                    var j = 0;
+                    for (var i = 0; i < JohnsonsQueue.path.length; i++) {
+                        // create element <td> and text node 
+                        //Make text node the contents of <td> element
+                        // put <td> at end of the table row
+                        var cell = document.createElement("td");
+                        cell.setAttribute("align", "center");
+                        var cellText = document.createTextNode(
+                                m1m2[JohnsonsQueue.path[i]][0]
+                                );
+                        cell.setAttribute("style",
+                                "width:" + 30 * m1m2[JohnsonsQueue.path[i]][0] + "px;"
+                                //+ "background-color:rgb(0,0,0);"
+                                );
+                        cell.appendChild(cellText);
+                        row.appendChild(cell);
+                        //row added to end of table body
+                        tblBody.appendChild(row);
+                    }
+
+                    // append the <tbody> inside the <table>
+                    tbl.appendChild(tblBody);
+                    // put <table> in the <body>
+                    body.appendChild(tbl);
+                    // tbl border attribute to 
+                    tbl.setAttribute("border", "1");
+                    tbl.setAttribute("style", "border-collapse: collapse;" + "border-spacing: -1px;" + "border: 1px solid black;");
+                }
+
+                tableCreateM2();
+                function tableCreateM2() {
+                    //body reference 
+                    var body = document.getElementsByTagName("body")[0];
+                    // create elements <table> and a <tbody>
+                    var tbl = document.createElement("table");
+                    var tblBody = document.createElement("tbody");
+                    // cells creation
+                    fj = 0;
+                    // table row creation
+                    var row = document.createElement("tr");
+                    var j = 0;
+                    for (var i = 0; i < drawLineM2.length; i++) {
+                        // create element <td> and text node 
+                        //Make text node the contents of <td> element
+                        // put <td> at end of the table row
+                        var cell = document.createElement("td");
+                        cell.setAttribute("align", "center");
+                        var cellText = document.createTextNode(
+                                drawLineM2[i][1]
+                                );
+                        if (drawLineM2[i][0]) {
+                            cell.setAttribute("style",
+                                    "width:" + 30 * drawLineM2[i][1] + "px;"
+                                    );
+                        } else {
+                            if (i === 0) {
+                                cell.setAttribute("style",
+                                        "width:" + ((30 * drawLineM2[i][1]) - 1) + "px;"
+                                        + "background-image: linear-gradient(138deg, #ffffff 25%, #bfe0f5 25%, #bfe0f5 50%, #ffffff 50%, #ffffff 75%, #bfe0f5 75%, #bfe0f5 100%);"
+                                        + "background-size: 10.89px 10.91px;"
+                                        );
+                            } else {
+                                cell.setAttribute("style",
+                                        "width:" + ((30 * drawLineM2[i][1]) - 2) + "px;"
+                                        + "background-image: linear-gradient(138deg, #ffffff 25%, #bfe0f5 25%, #bfe0f5 50%, #ffffff 50%, #ffffff 75%, #bfe0f5 75%, #bfe0f5 100%);"
+                                        + "background-size: 10.89px 10.91px;"
+                                        );
+                            }
+                        }
+                        cell.appendChild(cellText);
+                        row.appendChild(cell);
+                        //row added to end of table body
+                        tblBody.appendChild(row);
+                    }
+
+                    // append the <tbody> inside the <table>
+                    tbl.appendChild(tblBody);
+                    // put <table> in the <body>
+                    body.appendChild(tbl);
+                    // tbl border attribute to 
+                    tbl.setAttribute("border", "1");
+                    tbl.setAttribute("style", "border-collapse: collapse;" + "border-spacing: 0px;" + "border: 1px solid black;");
+                }
+
+
+                //document.body.innerHTML += "<p>Общее время - " + sum + "</p>";
+            }
+
+        </script>
+
+    </body>
+</html>
