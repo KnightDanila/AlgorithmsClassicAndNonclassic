@@ -148,9 +148,11 @@ and open the template in the editor.
                 for (var i = 1; i < JohnsonsQueue.path.length; i++) {
 
                     if (m1m2[JohnsonsQueue.path[i]][0] > save + m1m2[JohnsonsQueue.path[i - 1]][1]) {
-                        sum += m1m2[JohnsonsQueue.path[i]][0];
+                        sum += m1m2[JohnsonsQueue.path[i]][0] - save;   // I make a mistake here, I didnt subtract save
+                        // - m1m2[JohnsonsQueue.path[i - 1]][1]
                         drawLineM2.push([1, m1m2[JohnsonsQueue.path[i - 1]][1]]);
                         drawLineM2.push([0, m1m2[JohnsonsQueue.path[i]][0] - save - m1m2[JohnsonsQueue.path[i - 1]][1]]);
+                        save = 0;
                     } else {
 
                         //      save > m1m2[JohnsonsQueue.path[i]][0]
